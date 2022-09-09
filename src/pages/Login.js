@@ -9,7 +9,7 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [data, setData] = useState("");
-  const setPerson = useContext(PersonContext);
+  const { setPerson } = useContext(PersonContext);
   const navigate = useNavigate();
 
   function postLogin(event) {
@@ -17,7 +17,7 @@ export default function Login() {
     setData(null);
     axios
       .post(
-        "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/auth/login",
+        "http://localhost:5000/login",
         {
           email: email,
           password: password,
@@ -25,7 +25,7 @@ export default function Login() {
       )
       .then((answer) => {
         setData(answer);
-        navigate("/hoje");
+        navigate("/home");
         setPerson(answer.data);
       })
       .catch((err) => {
