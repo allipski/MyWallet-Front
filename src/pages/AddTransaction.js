@@ -3,18 +3,19 @@ import { FormStyle, InputStyle, ButtonStyle } from "./Login";
 import { ThreeDots } from "react-loader-spinner";
 import axios from "axios";
 import { useState, useContext } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
 import PersonContext from "../contexts/PersonContext";
 
-export default function Add() {
+export default function AddTransaction() {
   const [data, setData] = useState("");
   const [value, setValue] = useState("");
   const [description, setDescription] = useState("");
   const { operation, transactionType } = useParams();
   const navigate = useNavigate();
-  const { person } = useContext(PersonContext); 
+  const location = useLocation();
+  const { person } = useContext(PersonContext);
   const config = {
     headers: {
       Authorization: `Bearer ${person.token}`,
@@ -25,12 +26,16 @@ export default function Add() {
     event.preventDefault();
     setData(null);
     axios
-      .post("http://localhost:5000/transactions", {
-        date: dayjs().locale("pt-br").format("DD/MM"),
-        value: value,
-        description: description,
-        type: `${transactionType === "entrada" ? "entrada" : "saida"}`
-      }, config)
+      .post(
+        "http://localhost:5000/transactions",
+        {
+          date: dayjs().locale("pt-br").format("DD/MM"),
+          value: value,
+          description: description,
+          type: `${transactionType === "entrada" ? "entrada" : "saida"}`,
+        },
+        config
+      )
       .then((answer) => {
         setData(answer);
         navigate("/home");
@@ -38,7 +43,9 @@ export default function Add() {
       .catch((err) => {
         console.log(err);
         setData("");
-        alert("Não foi possível salvar sua transação. Por favor tente novamente mais tarde.");
+        alert(
+          "Não foi possível salvar sua transação. Por favor tente novamente mais tarde."
+        );
         setDescription("");
         setValue("");
         setData("");
@@ -48,12 +55,11 @@ export default function Add() {
   function changeEntry(event) {
     event.preventDefault();
     setData(null);
+    console.log(config);
     axios
-      .put("http://localhost:5000/transactions", {
-        date: dayjs().locale("pt-br").format("DD/MM"),
+      .put(`http://localhost:5000/transactions/${location.state.id}`,  {
         value: value,
-        description: description,
-        type: `${transactionType === "entrada" ? "entrada" : "saida"}`
+        description: description
       }, config)
       .then((answer) => {
         setData(answer);
@@ -62,7 +68,9 @@ export default function Add() {
       .catch((err) => {
         console.log(err);
         setData("");
-        alert("Não foi possível salvar sua transação. Por favor tente novamente mais tarde.");
+        alert(
+          "Não foi possível salvar sua transação. Por favor tente novamente mais tarde."
+        );
         setDescription("");
         setValue("");
         setData("");
@@ -83,14 +91,19 @@ export default function Add() {
         />
       );
     } else {
-      return `${operation === "add" ? "Salvar" : "Atualizar"} ${transactionType === "entrada" ? "entrada" : "saída"}`;
+      return `${operation === "add" ? "Salvar" : "Atualizar"} ${
+        transactionType === "entrada" ? "entrada" : "saída"
+      }`;
     }
   }
 
   return (
     <Wrapper>
       <Header>
-        <span>{operation === "add" ? "Nova" : "Editar"} {transactionType === "entrada" ? "entrada" : "saída"}</span>
+        <span>
+          {operation === "add" ? "Nova" : "Editar"}{" "}
+          {transactionType === "entrada" ? "entrada" : "saída"}
+        </span>
       </Header>
       <FormStyle onSubmit={operation === "add" ? addEntry : changeEntry}>
         <InputStyle

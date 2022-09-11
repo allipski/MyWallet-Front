@@ -13,8 +13,7 @@ export default function Transaction({ date, description, value, type, id, getTra
     },
   };
 
-  function deleteEntry(event) {
-    event.preventDefault();
+  function deleteEntry() {
     axios
       .delete(
         `http://localhost:5000/transactions/${id}`, config)
@@ -26,6 +25,12 @@ export default function Transaction({ date, description, value, type, id, getTra
         );
       });
   }
+  function confirmDelete(event){
+    event.preventDefault();
+    if (window.confirm("Tem certeza que deseja deletar essa transação? Essa ação não pode ser desfeita.")) {
+      deleteEntry();
+    }
+  }
 
   return (
     <Wrapper>
@@ -33,16 +38,16 @@ export default function Transaction({ date, description, value, type, id, getTra
       <Description
         onClick={() =>
           navigate(
-            `/transactions/editar/${
+            `/transaction/editar/${
               type === "entrada" ? "entrada" : "saida"
-            }/${id}`
+            }`, {state : { id: id } }
           )
         }
       >
         {description}
       </Description>
       <Value type={type}>{Number(value).toFixed(2)}</Value>
-      <p onClick={deleteEntry}>x</p>
+      <p onClick={confirmDelete}>x</p>
     </Wrapper>
   );
 }
