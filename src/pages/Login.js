@@ -12,6 +12,11 @@ export default function Login() {
   const { setPerson } = useContext(PersonContext);
   const navigate = useNavigate();
 
+  function makeLocal(itemjs) {
+    const session = JSON.stringify(itemjs)
+    localStorage.setItem("session", session);
+  }
+
   function postLogin(event) {
     event.preventDefault();
     setData(null);
@@ -24,9 +29,10 @@ export default function Login() {
         }
       )
       .then((answer) => {
-        setData(answer);
-        navigate("/home");
+        setData(answer.data);
         setPerson(answer.data);
+        makeLocal(answer.data);
+        navigate("/home");
       })
       .catch((err) => {
         console.log(err);
