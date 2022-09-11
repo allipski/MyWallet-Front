@@ -13,7 +13,7 @@ export default function Login() {
   const navigate = useNavigate();
 
   function makeLocal(itemjs) {
-    const session = JSON.stringify(itemjs)
+    const session = JSON.stringify(itemjs);
     localStorage.setItem("session", session);
   }
 
@@ -21,23 +21,20 @@ export default function Login() {
     event.preventDefault();
     setData(null);
     axios
-      .post(
-        "http://localhost:5000/login",
-        {
-          email: email,
-          password: password,
-        }
-      )
+      .post("http://localhost:5000/login", {
+        email: email,
+        password: password,
+      })
       .then((answer) => {
-        setData(answer.data);
-        setPerson(answer.data);
-        makeLocal(answer.data);
-        navigate("/home");
+          setData(answer.data);
+          setPerson(answer.data);
+          makeLocal(answer.data);
+          navigate("/home");
       })
       .catch((err) => {
         console.log(err);
         setData("");
-        alert("Email ou senha incorretos, revise seus dados e tente novamente");
+        alert("Email ou senha incorretos, revise seus dados e tente novamente.");
         setEmail("");
         setPassword("");
         setData("");
@@ -99,12 +96,12 @@ const Wrapper = styled.div`
   width: 100%;
   height: 100%;
   min-height: 100vh;
-  background-color: #8C11BE;
+  background-color: #8c11be;
 
   span {
-    font-family: 'Saira Stencil One', cursive;
+    font-family: "Saira Stencil One", cursive;
     font-size: 32px;
-    color: #FFFFFF;
+    color: #ffffff;
     margin-bottom: 30px;
   }
 `;
@@ -124,7 +121,7 @@ const InputStyle = styled.input`
   width: 100%;
   height: 45px;
   padding: 11px;
-  font-family: 'Raleway', sans-serif;
+  font-family: "Raleway", sans-serif;
   font-size: 20px;
   font-weight: 400;
   background-color: ${(props) =>
@@ -136,11 +133,11 @@ const ButtonStyle = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Raleway', sans-serif;
+  font-family: "Raleway", sans-serif;
   font-size: 20px;
   font-weight: 700;
   color: #ffffff;
-  background-color: #A328D6;
+  background-color: #a328d6;
   opacity: ${(props) => (props.carregando === null ? 0.7 : 1)};
   border: none;
   border-radius: 5px;
@@ -149,16 +146,16 @@ const ButtonStyle = styled.button`
 `;
 
 const LinkStyle = styled.p`
-  font-family: 'Raleway', sans-serif;
+  font-family: "Raleway", sans-serif;
   font-size: 14px;
   font-weight: 400;
-  color: #FFFFFF;
+  color: #ffffff;
   text-decoration: none;
   margin: 35px;
 
   a {
     text-decoration: none;
-    color: #FFFFFF;
+    color: #ffffff;
     font-weight: 700;
   }
 `;

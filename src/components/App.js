@@ -11,6 +11,7 @@ import AddTransaction from "../pages/AddTransaction";
 export default function App() {
 
   const [person, setPerson] = useState({
+    _id: "",
     name: "",
     email: "",
     token: "",

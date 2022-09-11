@@ -7,13 +7,23 @@ import PersonContext from "../contexts/PersonContext";
 import { useNavigate } from "react-router-dom";
 
 export default function Home() {
-  const { person } = useContext(PersonContext);
+  const { person, setPerson } = useContext(PersonContext);
+  checkLogin();
   const [transactions, setTransactions] = useState([]);
   const navigate = useNavigate();
 
   function getLocal() {
     const user = JSON.parse(localStorage.getItem("session"));
     return user;
+  }
+
+  function checkLogin() {
+    if (person._id === "" && getLocal()) {
+      setPerson(getLocal());
+    } else if (!person) {
+      alert("Sua sessão expirou! Por favor, faça o login novamente");
+      navigate("/");
+    }
   }
 
   const config = {
@@ -35,7 +45,27 @@ export default function Home() {
 
   function logout() {
     localStorage.clear();
-    navigate("/");
+    axios
+      .delete(`http://localhost:5000/login/${person._id}`, config)
+      .then(navigate("/"))
+      .catch((err) => {
+        console.log(err);
+        alert(
+          "Não foi possível fazer seu Logout. Por favor tente novamente mais tarde."
+        );
+      });
+  }
+
+  function getSaldo() {
+    let temp = 0;
+    transactions.forEach((item) => {
+      if (item.type === "entrada") {
+        temp += Number(item.value);
+      } else {
+        temp = Number(item.value);
+      }
+    });
+    return temp;
   }
 
   return (
@@ -46,17 +76,27 @@ export default function Home() {
       </Header>
 
       <MainBox>
-        {transactions.map((item, index) => (
-          <Transaction
-            key={index}
-            date={item.date}
-            description={item.description}
-            value={item.value}
-            type={item.type}
-            id={item._id}
-            getTransactions={getTransactions}
-          />
-        ))}
+        <div>
+          {transactions.map((item, index) => {
+            return (
+              <Transaction
+                key={index}
+                date={item.date}
+                description={item.description}
+                value={item.value}
+                type={item.type}
+                id={item._id}
+                getTransactions={getTransactions}
+              />
+            );
+          })}
+        </div>
+        <div>
+          <span>SALDO</span>
+          <span getSaldo={getSaldo}>
+            {Number(getSaldo()).toFixed(2)}
+          </span>
+        </div>
       </MainBox>
 
       <Buttons>
@@ -110,12 +150,43 @@ const MainBox = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-between;
   padding: 5px;
   width: 100%;
   flex-grow: 1;
   background-color: #ffffff;
   border-radius: 5px;
+
+  & > div:nth-child(1) {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  & > div:nth-child(2) {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px;
+
+    span:nth-child(1) {
+      font-family: "Raleway";
+      font-weight: 700;
+      font-size: 17px;
+      line-height: 20px;
+    }
+
+    span:nth-child(2) {
+      font-family: "Raleway";
+      font-style: normal;
+      font-weight: 400;
+      font-size: 16px;
+      color: ${props => props.getSaldo >= 0 ? "#C70000" : "#03AC00"};
+    }
+  }
 `;
 
 const Buttons = styled.div`

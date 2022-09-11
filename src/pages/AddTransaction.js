@@ -15,12 +15,27 @@ export default function AddTransaction() {
   const { operation, transactionType } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const { person } = useContext(PersonContext);
+  const { person, setPerson } = useContext(PersonContext);
+  checkLogin();
   const config = {
     headers: {
       Authorization: `Bearer ${person.token}`,
     },
   };
+
+  function getLocal() {
+    const user = JSON.parse(localStorage.getItem("session"));
+    return user;
+  }
+
+  function checkLogin() {
+    if (person._id === "" && getLocal()) {
+      setPerson(getLocal());
+    } else if (!person) {
+      alert("Sua sessão expirou! Por favor, faça o login novamente");
+      navigate("/");
+    }
+  }
 
   function addEntry(event) {
     event.preventDefault();
@@ -44,7 +59,7 @@ export default function AddTransaction() {
         console.log(err);
         setData("");
         alert(
-          "Não foi possível salvar sua transação. Por favor tente novamente mais tarde."
+          "Não foi possível salvar sua transação. Por favor tente novamente mais tarde. Dica: use ponto como separador de casa decimal para os centavos :)"
         );
         setDescription("");
         setValue("");
@@ -57,10 +72,14 @@ export default function AddTransaction() {
     setData(null);
     console.log(config);
     axios
-      .put(`http://localhost:5000/transactions/${location.state.id}`,  {
-        value: value,
-        description: description
-      }, config)
+      .put(
+        `http://localhost:5000/transactions/${location.state.id}`,
+        {
+          value: value,
+          description: description,
+        },
+        config
+      )
       .then((answer) => {
         setData(answer);
         navigate("/home");
@@ -69,7 +88,7 @@ export default function AddTransaction() {
         console.log(err);
         setData("");
         alert(
-          "Não foi possível salvar sua transação. Por favor tente novamente mais tarde."
+          "Não foi possível salvar sua transação. Por favor tente novamente mais tarde. Dica: use ponto como separador de casa decimal para os centavos :)"
         );
         setDescription("");
         setValue("");
